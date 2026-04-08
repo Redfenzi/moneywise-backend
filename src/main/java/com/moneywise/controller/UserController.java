@@ -45,4 +45,15 @@ public class UserController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
+    @DeleteMapping("/account")
+    public ResponseEntity<?> deleteAccount(Authentication auth,
+                                           @RequestBody Map<String, String> body) {
+        try {
+            userService.deleteAccount(auth.getName(), body.get("password"));
+            return ResponseEntity.ok(Map.of("message", "Compte supprimé avec succès"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }
