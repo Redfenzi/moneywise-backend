@@ -40,12 +40,15 @@ public class AuthService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setUserType(User.UserType.valueOf(request.getUserType().toUpperCase()));
+        if (request.getCurrency() != null && !request.getCurrency().isBlank()) {
+            user.setCurrency(request.getCurrency());
+        }
 
         userRepository.save(user);
 
         String token = jwtUtils.generateToken(user.getUsername());
         return new AuthResponse(token, user.getUsername(), user.getEmail(),
-                user.getFirstName(), user.getLastName(), user.getUserType().name());
+                user.getFirstName(), user.getLastName(), user.getUserType().name(), user.getCurrency());
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -56,6 +59,6 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
         String token = jwtUtils.generateToken(user.getUsername());
         return new AuthResponse(token, user.getUsername(), user.getEmail(),
-                user.getFirstName(), user.getLastName(), user.getUserType().name());
+                user.getFirstName(), user.getLastName(), user.getUserType().name(), user.getCurrency());
     }
 }

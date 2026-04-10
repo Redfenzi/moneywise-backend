@@ -46,6 +46,9 @@ public class User {
     private UserType userType = UserType.INDIVIDUAL;
 
     @Column(nullable = false)
+    private String currency = "EUR";
+
+    @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @JsonIgnore

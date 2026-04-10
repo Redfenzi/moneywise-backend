@@ -16,4 +16,6 @@ public class ProfileUpdateRequest {
     @Email
     @NotBlank
     private String email;
+
+    private String currency;
 }

@@ -26,4 +26,6 @@ public class RegisterRequest {
     private String lastName;
 
     private String userType = "INDIVIDUAL";
+
+    private String currency = "EUR";
 }

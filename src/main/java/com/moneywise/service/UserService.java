@@ -22,7 +22,7 @@ public class UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
         return new AuthResponse(null, user.getUsername(), user.getEmail(),
-                user.getFirstName(), user.getLastName(), user.getUserType().name());
+                user.getFirstName(), user.getLastName(), user.getUserType().name(), user.getCurrency());
     }
 
     public AuthResponse updateProfile(String username, ProfileUpdateRequest request) {
@@ -37,10 +37,13 @@ public class UserService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
+        if (request.getCurrency() != null && !request.getCurrency().isBlank()) {
+            user.setCurrency(request.getCurrency());
+        }
         userRepository.save(user);
 
         return new AuthResponse(null, user.getUsername(), user.getEmail(),
-                user.getFirstName(), user.getLastName(), user.getUserType().name());
+                user.getFirstName(), user.getLastName(), user.getUserType().name(), user.getCurrency());
     }
 
     public void changePassword(String username, PasswordChangeRequest request) {
