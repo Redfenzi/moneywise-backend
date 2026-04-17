@@ -56,7 +56,7 @@ public class PasswordResetService {
 
         resetTokenRepository.save(new PasswordResetToken(token, browserKey, user, expiresAt));
 
-        sendResetEmail(user, token);
+        sendResetEmail(user, token, browserKey);
 
         return browserKey;
     }
@@ -88,8 +88,8 @@ public class PasswordResetService {
         resetTokenRepository.save(resetToken);
     }
 
-    private void sendResetEmail(User user, String token) {
-        String resetUrl = frontendUrl + "/auth/reset-password?token=" + token;
+    private void sendResetEmail(User user, String token, String browserKey) {
+        String resetUrl = frontendUrl + "/auth/reset-password?token=" + token + "&bk=" + browserKey;
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("redtechsolutions75@gmail.com");
@@ -98,9 +98,9 @@ public class PasswordResetService {
         message.setText(
             "Bonjour " + user.getFirstName() + ",\n\n" +
             "Vous avez demandé la réinitialisation de votre mot de passe MoneyWise.\n\n" +
-            "Cliquez sur le lien ci-dessous depuis CE navigateur pour définir un nouveau mot de passe :\n\n" +
+            "Cliquez sur le lien ci-dessous pour définir un nouveau mot de passe :\n\n" +
             resetUrl + "\n\n" +
-            "⚠️ Ce lien est valable 1 heure et ne fonctionne que depuis le navigateur utilisé lors de la demande.\n\n" +
+            "⚠️ Ce lien est valable 1 heure.\n\n" +
             "Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.\n\n" +
             "— L'équipe MoneyWise"
         );
