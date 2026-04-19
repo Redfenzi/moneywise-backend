@@ -4,10 +4,13 @@ import com.moneywise.dto.AuthResponse;
 import com.moneywise.dto.PasswordChangeRequest;
 import com.moneywise.dto.ProfileUpdateRequest;
 import com.moneywise.entity.User;
+import com.moneywise.repository.EmailVerificationTokenRepository;
+import com.moneywise.repository.PasswordResetTokenRepository;
 import com.moneywise.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -17,6 +20,12 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Autowired
+    private EmailVerificationTokenRepository emailVerificationTokenRepository;
 
     public AuthResponse getProfile(String username) {
         User user = userRepository.findByUsername(username)
@@ -58,6 +67,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void deleteAccount(String username, String password) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
@@ -66,6 +76,8 @@ public class UserService {
             throw new RuntimeException("Mot de passe incorrect");
         }
 
+        passwordResetTokenRepository.deleteByUserId(user.getId());
+        emailVerificationTokenRepository.deleteByUserId(user.getId());
         userRepository.delete(user);
     }
 }
