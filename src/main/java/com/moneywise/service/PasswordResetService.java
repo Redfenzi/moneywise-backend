@@ -100,7 +100,7 @@ public class PasswordResetService {
             "Vous avez demandé la réinitialisation de votre mot de passe MoneyWise.\n\n" +
             "Cliquez sur le lien ci-dessous pour définir un nouveau mot de passe :\n\n" +
             resetUrl + "\n\n" +
-            "⚠️ Ce lien est valable 1 heure.\n\n" +
+            "⚠️ Ce lien est valable 2 minutes.\n\n" +
             "Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.\n\n" +
             "— L'équipe MoneyWise"
         );
