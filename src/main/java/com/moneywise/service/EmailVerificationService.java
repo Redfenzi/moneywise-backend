@@ -28,6 +28,16 @@ public class EmailVerificationService {
     @Value("${app.frontend-url}")
     private String frontendUrl;
 
+    /** Renvoie l'email de vérification pour un compte non encore vérifié. */
+    public void resendVerification(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Aucun compte associé à cet email."));
+        if (user.isEmailVerified()) {
+            throw new RuntimeException("Ce compte est déjà vérifié. Vous pouvez vous connecter.");
+        }
+        sendVerificationEmail(user);
+    }
+
     /** Génère et envoie l'email de confirmation pour un nouvel inscrit. */
     public void sendVerificationEmail(User user) {
         tokenRepository.deleteExpired(LocalDateTime.now());

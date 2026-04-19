@@ -29,11 +29,17 @@ public class AuthService {
     private EmailVerificationService emailVerificationService;
 
     public void register(RegisterRequest request) {
+        // Si l'email existe mais le compte n'est pas vérifié → on supprime pour autoriser la réinscription
+        User existingByEmail = userRepository.findByEmail(request.getEmail()).orElse(null);
+        if (existingByEmail != null) {
+            if (existingByEmail.isEmailVerified()) {
+                throw new RuntimeException("Cet email est déjà utilisé");
+            }
+            userRepository.delete(existingByEmail);
+        }
+
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("Ce nom d'utilisateur est déjà pris");
-        }
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Cet email est déjà utilisé");
         }
 
         User user = new User();

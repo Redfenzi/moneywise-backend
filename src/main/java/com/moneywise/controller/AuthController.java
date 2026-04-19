@@ -57,6 +57,16 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/resend-verification")
+    public ResponseEntity<?> resendVerification(@RequestBody Map<String, String> body) {
+        try {
+            emailVerificationService.resendVerification(body.get("email"));
+            return ResponseEntity.ok(Map.of("message", "Email de confirmation renvoyé."));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         // Toujours retourner 200 pour éviter l'énumération d'emails
