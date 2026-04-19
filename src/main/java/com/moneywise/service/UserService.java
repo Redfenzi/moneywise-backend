@@ -12,8 +12,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.regex.Pattern;
+
 @Service
 public class UserService {
+
+    private static final Pattern STRONG_PASSWORD =
+        Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{12,}$");
 
     @Autowired
     private UserRepository userRepository;
@@ -56,6 +61,9 @@ public class UserService {
     }
 
     public void changePassword(String username, PasswordChangeRequest request) {
+        if (!STRONG_PASSWORD.matcher(request.getNewPassword()).matches()) {
+            throw new RuntimeException("Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.");
+        }
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 

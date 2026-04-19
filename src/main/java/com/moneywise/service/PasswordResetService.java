@@ -13,9 +13,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Service
 public class PasswordResetService {
+
+    private static final Pattern STRONG_PASSWORD =
+        Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{12,}$");
 
     @Autowired
     private UserRepository userRepository;
@@ -66,6 +70,9 @@ public class PasswordResetService {
      * Le browserKey doit correspondre à celui stocké dans le localStorage du navigateur demandeur.
      */
     public void resetPassword(String token, String browserKey, String newPassword) {
+        if (!STRONG_PASSWORD.matcher(newPassword).matches()) {
+            throw new RuntimeException("Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.");
+        }
         PasswordResetToken resetToken = resetTokenRepository.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("Lien de réinitialisation invalide ou expiré."));
 

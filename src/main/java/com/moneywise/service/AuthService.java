@@ -10,8 +10,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.regex.Pattern;
+
 @Service
 public class AuthService {
+
+    private static final Pattern STRONG_PASSWORD =
+        Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{12,}$");
 
     @Autowired
     private UserRepository userRepository;
@@ -29,6 +34,9 @@ public class AuthService {
     private EmailVerificationService emailVerificationService;
 
     public void register(RegisterRequest request) {
+        if (!STRONG_PASSWORD.matcher(request.getPassword()).matches()) {
+            throw new RuntimeException("Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.");
+        }
         // Si l'email existe mais le compte n'est pas vérifié → on supprime pour autoriser la réinscription
         User existingByEmail = userRepository.findByEmail(request.getEmail()).orElse(null);
         if (existingByEmail != null) {
