@@ -69,7 +69,7 @@ public class EmailVerificationService {
             "Merci de vous être inscrit sur MoneyWise !\n\n" +
             "Pour activer votre compte, cliquez sur le lien ci-dessous :\n\n" +
             verifyUrl + "\n\n" +
-            "⚠️ Ce lien est valable 24 heures.\n\n" +
+            "⚠️ Ce lien est valable 2 minutes.\n\n" +
             "Si vous n'avez pas créé de compte, ignorez cet email.\n\n" +
             "— L'équipe MoneyWise"
         );
