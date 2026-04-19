@@ -2,6 +2,7 @@ package com.moneywise.controller;
 
 import com.moneywise.dto.*;
 import com.moneywise.service.AuthService;
+import com.moneywise.service.EmailVerificationService;
 import com.moneywise.service.PasswordResetService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +21,14 @@ public class AuthController {
     @Autowired
     private PasswordResetService passwordResetService;
 
+    @Autowired
+    private EmailVerificationService emailVerificationService;
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         try {
-            AuthResponse response = authService.register(request);
-            return ResponseEntity.ok(response);
+            authService.register(request);
+            return ResponseEntity.ok(Map.of("message", "Inscription réussie ! Vérifiez votre email pour activer votre compte."));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -35,8 +39,21 @@ public class AuthController {
         try {
             AuthResponse response = authService.login(request);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            if ("EMAIL_NOT_VERIFIED".equals(e.getMessage())) {
+                return ResponseEntity.status(403).body(Map.of("error", "EMAIL_NOT_VERIFIED"));
+            }
             return ResponseEntity.badRequest().body(Map.of("error", "Identifiants invalides"));
+        }
+    }
+
+    @GetMapping("/verify-email")
+    public ResponseEntity<?> verifyEmail(@RequestParam String token) {
+        try {
+            emailVerificationService.verifyEmail(token);
+            return ResponseEntity.ok(Map.of("message", "Email vérifié avec succès !"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 

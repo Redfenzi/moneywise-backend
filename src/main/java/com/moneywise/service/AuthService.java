@@ -25,7 +25,10 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public AuthResponse register(RegisterRequest request) {
+    @Autowired
+    private EmailVerificationService emailVerificationService;
+
+    public void register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("Ce nom d'utilisateur est déjà pris");
         }
@@ -43,12 +46,10 @@ public class AuthService {
         if (request.getCurrency() != null && !request.getCurrency().isBlank()) {
             user.setCurrency(request.getCurrency());
         }
+        user.setEmailVerified(false);
 
         userRepository.save(user);
-
-        String token = jwtUtils.generateToken(user.getUsername());
-        return new AuthResponse(token, user.getUsername(), user.getEmail(),
-                user.getFirstName(), user.getLastName(), user.getUserType().name(), user.getCurrency());
+        emailVerificationService.sendVerificationEmail(user);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -57,6 +58,11 @@ public class AuthService {
         );
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        if (!user.isEmailVerified()) {
+            throw new RuntimeException("EMAIL_NOT_VERIFIED");
+        }
+
         String token = jwtUtils.generateToken(user.getUsername());
         return new AuthResponse(token, user.getUsername(), user.getEmail(),
                 user.getFirstName(), user.getLastName(), user.getUserType().name(), user.getCurrency());

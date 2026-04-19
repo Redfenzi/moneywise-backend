@@ -49,6 +49,9 @@ public class User {
     private String currency = "EUR";
 
     @Column(nullable = false)
+    private boolean emailVerified = false;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @JsonIgnore
