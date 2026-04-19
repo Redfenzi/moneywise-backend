@@ -34,7 +34,7 @@ public class EmailVerificationService {
         tokenRepository.deleteByUserId(user.getId());
 
         String token = UUID.randomUUID().toString();
-        LocalDateTime expiresAt = LocalDateTime.now().plusHours(24);
+        LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(2);
 
         tokenRepository.save(new EmailVerificationToken(token, user, expiresAt));
         sendEmail(user, token);

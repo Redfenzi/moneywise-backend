@@ -52,7 +52,7 @@ public class PasswordResetService {
 
         String token = UUID.randomUUID().toString();
         String browserKey = UUID.randomUUID().toString();
-        LocalDateTime expiresAt = LocalDateTime.now().plusHours(1);
+        LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(2);
 
         resetTokenRepository.save(new PasswordResetToken(token, browserKey, user, expiresAt));
 
